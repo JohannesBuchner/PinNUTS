@@ -1,16 +1,16 @@
 from setuptools import setup, find_packages
 
 def readme():
-    with open('README.md') as f:
+    with open('README.rst') as f:
         return f.read()
 
-setup(name = "nuts",
+setup(name = "pinnuts",
     version = 1.0,
-    description = "No-U-Turn Sampler (NUTS) implementation for python",
+    description = "dynamic Hamiltonian Monte Carlo implementation for python",
     long_description = readme(),
     author = "Morgan Fouesneau",
     author_email = "",
-    url = "https://github.com/mfouesneau/NUTS",
+    url = "https://github.com/JohannesBuchner/PinNUTS",
     packages = find_packages(),
     package_data = {},
     include_package_data = True,

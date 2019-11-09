@@ -7,7 +7,7 @@ from .helpers import PinNutsSampler_fn_wrapper
 from emcee.sampler import Sampler
 
 
-__all__ = ['NUTSSampler', 'test_sampler']
+__all__ = ['PinNUTSSampler', 'test_sampler']
 
 
 class PinNUTSSampler(Sampler):

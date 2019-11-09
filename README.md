@@ -1,20 +1,24 @@
-No-U-Turn Sampler (NUTS) for python
+PinNUTS is not No-U-Turn-Sampler
 ===================================
 
-This package implements the No-U-Turn Sampler (NUTS) algorithm 6 from the NUTS paper ([Hoffman & Gelman, 2011][1]).
+PinNUTS is an implementation of a dynamic Hamiltonian Monte Carlo algorithm.
+
+PinNUTS is an improved Hamiltonian Monte Carlo algorithm with high
+acceptance rates. It benefits from avoiding trajectories from u-turning
+and a multinomial acceptance scheme. It is not NUTS.
+
 
 Content
 -------
 
 The package mainly contains:
 
-* `nuts.nuts6`              return samples using the NUTS                  
-* `nuts.numerical_grad`     return numerical estimate of the local gradient
-* `emcee_nuts.NUTSSampler`  emcee NUTS sampler, a derived class from `emcee.Sampler`
+* `pinnuts.pinnuts`         return samples using dyHMC
+* `emcee_pinnuts.PinNUTSSampler`  emcee PinNUTS sampler, a derived class from `emcee.Sampler`
 
 
-A few words about NUTS
-----------------------
+A few words about NUTS and dyHMC
+---------------------------------
 
 Hamiltonian Monte Carlo or Hybrid Monte Carlo (HMC) is a Markov chain Monte Carlo (MCMC) algorithm that avoids the random walk behavior and sensitivity to correlated parameters, biggest weakness of many MCMC methods. Instead, it takes a series of steps informed by first-order gradient information.
 
@@ -24,22 +28,30 @@ However, HMC's performance is highly sensitive to two user-specified parameters:
 
 Hoffman & Gelman introduced NUTS or the No-U-Turn Sampler, an extension to HMC that eliminates the need to set a number of steps.  NUTS uses a recursive algorithm to find likely candidate points that automatically stops when it starts to double back and retrace its steps.  Empirically, NUTS perform at least as effciently as and sometimes more effciently than a well tuned standard HMC method, without requiring user intervention or costly tuning runs.
 
-Moreover, Hoffman & Gelman derived a method for adapting the step size parameter on the fly based on primal-dual averaging.  NUTS can thus be used with no hand-tuning at all.
+Moreover, Hoffman & Gelman derived a method for adapting the step size parameter 
+on the fly based on primal-dual averaging.  NUTS can thus be used with no hand-tuning at all.
 
-In practice, the implementation still requires a number of steps, a burning period and a stepsize. However, the stepsize will be optimized during the burning period, and the final values of all the user-defined values will be revised by the algorithm.
+In practice, the implementation still requires a number of steps, a burning period and a stepsize. 
+However, the stepsize will be optimized during the burning period, 
+and the final values of all the user-defined values will be revised by the algorithm.
+
+More recently, the Stan team made improvements over NUTS by replacing
+the slice sampling with multinomial sampling and. 
+These improvements are nicely described in Betancourt (2016).
+
 
 **reference**: 
 [arXiv:1111.4246][1]: Matthew D. Hoffman & Andrew Gelman, 2011, "_The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo_"
+[arXiv:1701.02434][1]: Michael Betancourt, 2016, "_A conceptual introduction to Hamiltonian Monte Carlo_"
 
 [1]: http://arxiv.org/abs/1111.4246
-
-[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/mfouesneau/NUTS/master?filepath=examples%2Fimf_examples.ipynb)
+[2]: http://arxiv.org/abs/1701.02434
 
 
 Example Usage
 -------------
 **sampling a 2d highly correlated Gaussian distribution**
-see `nuts.test_nuts6`
+see `pinnuts.pinnuts`
 
 
 * define a log-likelihood and gradient function:
@@ -78,7 +90,7 @@ cov = np.asarray([[1, 1.98],
 * run the sampling:
 
 ```python
-samples, lnprob, epsilon = nuts6(correlated_normal, M, Madapt, theta0, delta)
+samples, lnprob, epsilon = pinnuts(correlated_normal, M, Madapt, theta0, delta)
 ```
 
 * some statistics: expecting mean = (0, 0) and std = (1., 4.)
@@ -100,7 +112,7 @@ plt.show()
 Example usage as an EMCEE sampler
 ---------------------------------
 
-see `emcee_nuts.test_sampler`
+see `emcee_pinnuts.test_sampler`
 
 * define a log-likelihood function:
 
@@ -133,7 +145,7 @@ cov = np.asarray([[1, 1.98],
 * run the sampling:
 
 ```python
-sampler = NUTSSampler(D, lnprobfn, gradfn)
+sampler = PinNUTSSampler(D, lnprobfn, gradfn)
 samples = sampler.run_mcmc( theta0, M, Madapt, delta )
 ```
 
