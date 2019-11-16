@@ -1,9 +1,12 @@
 PinNUTS is not No-U-Turn-Sampler
 ===================================
 
-PinNUTS is an improved Hamiltonian Monte Carlo algorithm with high
+PinNUTS🥜 is an improved Hamiltonian Monte Carlo algorithm with high
 acceptance rates. It benefits from avoiding trajectories from u-turning
 and a multinomial acceptance scheme. It is not NUTS.
+
+PinNUTS is dynamic euclidean HMC with multinomial trajectory sampling,
+but DEHMCMTS doesn't sound like peanuts🥜🥜🥜.
 
 Content
 -------

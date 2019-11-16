@@ -1,5 +1,7 @@
 """
-PinNUTS is not No-U-Turn-Sampling.
+PinNUTS is not No-U-Turn-Sampling. 
+PinNUTS is dynamic euclidean HMC with multinomial sampling,
+but DEHMCMS doesn't sound like peanuts.
 
 Licence
 ---------
@@ -61,8 +63,8 @@ def build_tree(theta, r, grad, v, j, epsilon, f, joint0):
         # Recursion: Implicitly build the height j-1 left and right subtrees.
         thetaminus, rminus, gradminus, thetaplus, rplus, gradplus, thetaprime, gradprime, logpprime, sprime, alphaprime, nalphaprime, logptree = build_tree(theta, r, grad, v, j - 1, epsilon, f, joint0)
         # No need to keep going if the stopping criteria were met in the first subtree.
-        if (sprime == 1):
-            if (v == -1):
+        if sprime:
+            if v == -1:
                 thetaminus, rminus, gradminus, _, _, _, thetaprime2, gradprime2, logpprime2, sprime2, alphaprime2, nalphaprime2, logptree2 = build_tree(thetaminus, rminus, gradminus, v, j - 1, epsilon, f, joint0)
             else:
                 _, _, _, thetaplus, rplus, gradplus, thetaprime2, gradprime2, logpprime2, sprime2, alphaprime2, nalphaprime2, logptree2 = build_tree(thetaplus, rplus, gradplus, v, j - 1, epsilon, f, joint0)
