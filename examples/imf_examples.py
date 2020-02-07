@@ -70,7 +70,7 @@ import numpy as np
 import random as random
 import matplotlib.pyplot as plt
 import time
-from nuts import nuts6, NutsSampler_fn_wrapper
+from pinnuts import pinnuts, PinNutsSampler_fn_wrapper
 
 # set the seed
 random.seed(1)
@@ -182,12 +182,12 @@ def test_nuts6():
     theta0 = np.asarray([3.0])
     delta = 0.5
 
-    nuts_fn = NutsSampler_fn_wrapper(logLikelihood, grad_logLikelihood, D, Nstars, M_min, M_max)
+    nuts_fn = PinNutsSampler_fn_wrapper(logLikelihood, grad_logLikelihood, D, Nstars, M_min, M_max)
     #nuts_fn.verbose = True
 
     t_start = time.time()
     print("Starting Sampling at %s" % time.ctime(t_start))
-    A, lnprob, epsilon = nuts6(nuts_fn, M, Madapt, theta0, delta)
+    A, lnprob, epsilon = pinnuts(nuts_fn, M, Madapt, theta0, delta)
     t_stop = time.time()
     print("Sampling Completed in %0.2f seconds" % (t_stop - t_start))
 
@@ -212,58 +212,55 @@ def test_nuts6():
     plt.show()
 
 
-try:
-    from nuts import NUTSSampler
+from pinnuts.emcee_nuts import PinNUTSSampler
 
-    def test_emcee_nuts6():
-        # Generate toy data.
-        Nstars = int(1e5)
-        alpha  = 2.35
-        M_min  = 1.0
-        M_max  = 100.0
-        Masses = random_PowerLaw(Nstars, alpha, M_min, M_max)
-        LogM   = np.log(Masses)
-        D      = np.mean(LogM) * Nstars
 
-        #NUTS pars
-        M, Madapt = 1000, 1000
-        theta0 = np.asarray([3.0])
-        delta = 0.6
+def test_emcee_nuts6():
+    # Generate toy data.
+    Nstars = int(1e5)
+    alpha  = 2.35
+    M_min  = 1.0
+    M_max  = 100.0
+    Masses = random_PowerLaw(Nstars, alpha, M_min, M_max)
+    LogM   = np.log(Masses)
+    D      = np.mean(LogM) * Nstars
 
-        #nuts_fn = NutsSampler_fn_wrapper(logLikelihood, grad_logLikelihood, D, Nstars, M_min, M_max)
-        #nuts_fn.verbose = True
+    #NUTS pars
+    M, Madapt = 1000, 1000
+    theta0 = np.asarray([3.0])
+    delta = 0.6
 
-        sampler = NUTSSampler(len(theta0), logLikelihood, grad_logLikelihood, D, Nstars, M_min, M_max)
+    #nuts_fn = NutsSampler_fn_wrapper(logLikelihood, grad_logLikelihood, D, Nstars, M_min, M_max)
+    #nuts_fn.verbose = True
 
-        t_start = time.time()
-        print("Starting Sampling at %s" % time.ctime(t_start))
-        A = sampler.run_mcmc(theta0, M, Madapt, delta)
-        t_stop = time.time()
-        print("Sampling Completed in %0.2f seconds" % (t_stop - t_start))
+    sampler = PinNUTSSampler(len(theta0), logLikelihood, grad_logLikelihood, D, Nstars, M_min, M_max)
 
-        plt.figure(1)
+    t_start = time.time()
+    print("Starting Sampling at %s" % time.ctime(t_start))
+    A = sampler.run_mcmc(theta0, M, Madapt, delta)
+    t_stop = time.time()
+    print("Sampling Completed in %0.2f seconds" % (t_stop - t_start))
 
-        # Print Monte-Carlo estimate of alpha.
-        print("Mean:  " + str(np.mean(A)))
-        per = np.percentile(A, [16, 50, 84])
-        print("Alpha = {} (+{} / - {})".format( per[1], per[2] - per[1], per[1] - per[0] ))
+    plt.figure(1)
 
-        n, b = np.histogram(A, 30)
-        x = 0.5 * (b[:-1] + b[1:])
-        y = n.astype(float) / n.sum()
-        plt.step(x, y, color='b', lw=3, where='mid')
-        plt.vlines(per, 0., max(y), linestyle='--', color='b', lw=1)
+    # Print Monte-Carlo estimate of alpha.
+    print("Mean:  " + str(np.mean(A)))
+    per = np.percentile(A, [16, 50, 84])
+    print("Alpha = {} (+{} / - {})".format( per[1], per[2] - per[1], per[1] - per[0] ))
 
-        ylim = plt.ylim()
-        plt.vlines(alpha, 0, ylim[1], color='r', lw=3)
-        plt.ylim(ylim)
-        plt.xlabel(r'$\alpha$', fontsize=24)
-        plt.ylabel(r'$\cal L($Data$;\alpha)$', fontsize=24)
-        plt.show()
+    n, b = np.histogram(A, 30)
+    x = 0.5 * (b[:-1] + b[1:])
+    y = n.astype(float) / n.sum()
+    plt.step(x, y, color='b', lw=3, where='mid')
+    plt.vlines(per, 0., max(y), linestyle='--', color='b', lw=1)
 
-except ImportError:
-    pass
+    ylim = plt.ylim()
+    plt.vlines(alpha, 0, ylim[1], color='r', lw=3)
+    plt.ylim(ylim)
+    plt.xlabel(r'$\alpha$', fontsize=24)
+    plt.ylabel(r'$\cal L($Data$;\alpha)$', fontsize=24)
+    plt.show()
 
 if __name__ == '__main__':
     test_nuts6()
-    #test_emcee_nuts6()
+    test_emcee_nuts6()

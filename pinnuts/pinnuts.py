@@ -35,7 +35,7 @@ from numpy import log, exp, sqrt
 import tqdm
 
 __all__ = ['pinnuts']
-from nuts import leapfrog, stop_criterion, find_reasonable_epsilon
+from .nuts import leapfrog, stop_criterion, find_reasonable_epsilon
 
 def build_tree(theta, r, grad, v, j, epsilon, f, joint0):
     """The main recursion."""

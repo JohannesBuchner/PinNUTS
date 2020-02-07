@@ -2,7 +2,7 @@
     http://dan.iel.fm/emcee/
 """
 import numpy as np
-from .nuts import pinnuts
+from .pinnuts import pinnuts
 from .helpers import PinNutsSampler_fn_wrapper
 from emcee.sampler import Sampler
 
